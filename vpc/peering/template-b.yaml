@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template to deploy an EC2 instance with web hosting and no SSM.'
+
+Parameters:
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
+    Description: 'Automatically fetches the latest Amazon Linux 2023 AMI ID.'
+
+  InstanceType:
+    Type: String
+    Default: t3.micro
+    Description: 'EC2 instance type'
+
+Resources:
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: 'Blank template'
+      VpcId: vpc-05163f8ad8f72226b
+      SecurityGroupIngress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0 
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0 
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref LatestAmiId
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          AssociatePublicIpAddress: true
+          GroupSet:
+            - !GetAtt SecurityGroup.GroupId
+          SubnetId: 'subnet-041e4c07dfa6fd697'
+          DeleteOnTermination: true
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          systemctl start httpd
+          systemctl enable httpd
+          echo "<html><body><h1>hello from apache linux 2</h1></body></html>" > /var/www/html/index.html
+      Tags:
+        - Key: Name
+          Value: b-ec2instance
