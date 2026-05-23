@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+echo "== delete stack via cfn =="
+
+if [ -z "$1" ]; then
+    echo "A stack name must be provided."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "A region for the bucket must be provided."
+    exit 1
+fi
+
+STACK_NAME=$1
+REGION=$2
+# https://docs.aws.amazon.com/cli/latest/reference/cloudformation/delete-stack.html
+aws cloudformation delete-stack \
+ --stack-name $STACK_NAME \
+ --region $REGION

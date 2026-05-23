@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+echo "== delete objects =="
+
+if [ -z "$1" ]; then
+    echo "A bucket name must be provided."
+    exit 1
+fi
+
+BUCKET_NAME=$1
+
+# https://docs.aws.amazon.com/cli/latest/reference/s3/rm.html
+aws s3 rm s3://$BUCKET_NAME --recursive

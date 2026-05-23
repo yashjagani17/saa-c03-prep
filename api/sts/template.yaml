@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create a new role
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: "yashj123456-sts"
+
+Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BucketName
+
+  CustomRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Description: "Custom Role for S3 Access"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: 
+              AWS: "arn:aws:iam::425560113058:user/sts-testuser"
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+            - !Ref S3AccessManagedPolicy
+
+  S3AccessManagedPolicy:
+    Type: 'AWS::IAM::ManagedPolicy'
+    Properties:
+      Description: "S3 Access Policy"
+      Path: /
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: 
+              - '*'
+            Resource: 
+              - !Sub "arn:aws:s3:::${BucketName}"
+              - !Sub "arn:aws:s3:::${BucketName}/*"

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+echo "== list objects =="
+
+if [ -z "$1" ]; then
+    echo "A bucket name must be provided."
+    exit 1
+fi
+
+BUCKET_NAME=$1
+
+# https://docs.aws.amazon.com/cli/latest/reference/s3api/list-objects-v2.html
+aws s3api list-objects-v2 \
+ --bucket $BUCKET_NAME \
+ --query Contents[*].Key \
+ --output text | tr -d '"'  | tr '\t' '\n'

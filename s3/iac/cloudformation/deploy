@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+echo "== deploy s3 bucket via cfn =="
+
+if [ -z "$1" ]; then
+    echo "A template file path must be provided."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "A stack name must be provided."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "A region for the bucket must be provided."
+    exit 1
+fi
+
+TEMPLATE_PATH=$1
+STACK_NAME=$2
+REGION=$3
+# https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy.html
+aws cloudformation deploy \
+ --template-file $TEMPLATE_PATH \
+ --stack-name $STACK_NAME \
+ --region $REGION \
+ --no-execute-changeset

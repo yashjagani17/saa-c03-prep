@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+echo "== cp =="
+
+if [ -z "$1" ]; then
+    echo "Source directory for cp must be provided."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
+    echo "Destination for cp must be provided."
+    exit 1
+fi
+
+SOURCE=$1
+DEST=$2
+
+# https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html
+aws s3 cp \
+ $SOURCE \
+ "s3://$DEST/files"
