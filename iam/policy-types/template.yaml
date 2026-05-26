@@ -1,0 +1,38 @@
+Resources:
+    User:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-user.html
+      Type: AWS::IAM::User
+      Properties:
+          UserName: 'custom-user'
+          ManagedPolicyArns:
+              - arn:aws:iam::aws:policy/job-function/ViewOnlyAccess
+              - !Ref CustomerManagedPolicy
+
+    CustomerManagedPolicy:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-iam-user-policy.html
+      Type: 'AWS::IAM::ManagedPolicy'
+      Properties:
+        ManagedPolicyName: 'customer-managed-policy'
+        Description: 'allow iam list roles and list users for all resources'
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+              - Sid: IamListAccess
+                Effect: Allow
+                Action:
+                - 'iam:ListRoles'
+                - 'iam:ListUsers'
+                Resource: '*'
+
+    InlinePolicy:
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-iam-userpolicy.html
+      Type: 'AWS::IAM::UserPolicy'
+      Properties:
+        PolicyName: custom-inline-policy
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: 'EC2:*'
+              Resource: '*'
+        UserName: !Ref User
