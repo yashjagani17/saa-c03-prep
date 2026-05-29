@@ -1,6 +1,0 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Description: SNS via CFN
-Transform: AWS::Serverless-2016-10-31
-Resources:
-  SNSTopic:
-    Type: AWS::SNS::Topic
