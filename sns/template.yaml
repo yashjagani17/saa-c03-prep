@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: SNS via CFN + SAM
+
+Resources:
+  SNSTopic:
+    Type: AWS::SNS::Topic
+
+  Lambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: python3.12
+      PackageType: Zip
+      InlineCode: |
+        import json
+        def handler(event, context):
+            raw_message = event['Records'][0]['Sns']['Message']
+            data = json.loads(raw_message) 
+            print("Hello {} {}!".format(data['first_name'], data['last_name']))
+            return {'message': 'Success'}
+
+  LambdaSNSSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !GetAtt Lambda.Arn
+      Protocol: lambda
+      TopicArn: !Ref SNSTopic
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref Lambda
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref SNSTopic
